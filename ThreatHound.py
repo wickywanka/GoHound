@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
-"""
-@author n4ll3ec
 
-"""
 
 import sys
 import os
@@ -20,7 +17,7 @@ from OTXv2 import IndicatorTypes
 from color import cprint, cprint_cyan, cprint_yellow, cprint_red, FgColor
 
 
-# MISP相关全局变量
+# MISP related global variables
 MISP_SERVER = 'https://10.28.94.11:8443'
 MISP_API_KEY = 'KwKGjLgfAy3Rva27oEPSA9LfavavWEv6UgmWgvgX'
 threat_feeds_db = [
@@ -103,15 +100,15 @@ threat_feeds_db = [
     {'feed_id': 87, 'feed_name': 'abuse.ch URLhaus List', 'feed_url': 'https://urlhaus.abuse.ch/downloads/text/'},
 ]
 REPUTATION_DB_PATH = 'ReputationDB' 
-# 并发性能设置
+# Concurrency performance settings
 CPU_CORES = 6
 MAX_LINES = 1000000
 
-# OTX全局变量设置
+# OTX global variable settings
 OTX_SERVER = 'https://otx.alienvault.com/'
 OTX_API_KEY = 'AlienVault API Key'
 
-# 其他全局设置
+# Other global settings
 cache_mode = True
 local_mode = False
 online_mode = False
@@ -154,9 +151,9 @@ class misp_threat_intelligence():
             rep = requests.get(feeds_preview_url, headers=req_header, verify=False)
             self.feed_entities = json.loads(rep.content)
             feed_entity_num = len(self.feed_entities)
-            cprint_cyan("feed{}-{}中共获取到{}条数据".format(self.feed_id, self.feed_name, feed_entity_num))
+            cprint_cyan("feed{}-{}obtained by the CCP{}Article data".format(self.feed_id, self.feed_name, feed_entity_num))
         except Exception as e:
-            cprint_red("feed请求失败")
+            cprint_red("feed request failed")
             # cprint_red(e)
 
         return self.feed_entities
@@ -164,7 +161,7 @@ class misp_threat_intelligence():
 
 class otx_reputation(object):
     """
-    AlienVault OTX威胁情报数据库 
+    AlienVault OTX Threat Intelligence Database 
     """
     
     def __init__(self, *args, **kwargs):
@@ -205,7 +202,7 @@ class otx_reputation(object):
                         if 'name' in pulse:
                             self.alerts.append('In pulse: ' + pulse['name'])
         except Exception as e:
-            print("{}为保留IP".format(ip))
+            print("{}reserved IP".format(ip))
 
     def detect_domain(self, domain):
         result = self.otx.get_indicator_details_by_section(IndicatorTypes.HOSTNAME, domain, 'general')
@@ -231,12 +228,12 @@ class otx_reputation(object):
 
     def check_alerts(self, target):
         if len(self.alerts) > 0:
-            cprint_red('{} 被识别为潜在恶意IP'.format(target))
+            cprint_red('{} Identified as a potentially malicious IP'.format(target))
             # cprint_red(str(self.alerts))
         else:
-            cprint_cyan('{} 未知或非恶意IP'.format(target))
+            cprint_cyan('{} Unknown or non-malicious IP'.format(target))
 
-        # 将IP威胁事件格式化为字典形式
+        # Format IP threat events into dictionary form
         entity_dic = {}
         # alerts_dic = {}
         alerts_lst = []
@@ -266,7 +263,7 @@ class otx_reputation(object):
                 f.writelines('\n')
         except Exception as e:
             print(e)
-            print("保存至文件失败")
+            print("Failed to save to file")
         return f 
 
 def print_banner():
@@ -283,33 +280,33 @@ def print_banner():
 
 def arg_parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument('ipfile', nargs='?', help="IP列表文件，每行一个IP")
+    parser.add_argument('ipfile', nargs='?', help="IP list file, one IP per line")
     mode_exclu_args_group = parser.add_mutually_exclusive_group()
-    mode_exclu_args_group.add_argument('--fetch', dest='feed_id', nargs='*', default="all", help="获取id为n的feed数据，格式:n, n m或all")
-    mode_exclu_args_group.add_argument('--local', action='store_true', help='使用本地缓存feed数据进行查询',)
-    mode_exclu_args_group.add_argument('--online', action='store_true', default=False, help="在线联网查询")
+    mode_exclu_args_group.add_argument('--fetch', dest='feed_id', nargs='*', default="all", help="Get feed data with id n, format: n, n m or all")
+    mode_exclu_args_group.add_argument('--local', action='store_true', help='Query using locally cached feed data',)
+    mode_exclu_args_group.add_argument('--online', action='store_true', default=False, help="Online Networking Query")
     target_exclu_args_group = parser.add_mutually_exclusive_group()
-    target_exclu_args_group.add_argument('--ip', help="对单个IP进行查询")
-    target_exclu_args_group.add_argument('--domain', help="对单个域名进行查询")
-    parser.add_argument('--type', dest='query_type', metavar='query_type', choices=['ip', 'domain'], help="在线联网查询的类型，选项:ip,domain")
-    parser.add_argument('--list', action='store_true', help="显示已添加feed列表信息")
-    parser.add_argument('--output', help="查询结果保存至外部文件")
-    parser.add_argument('--db', help='包含IP信誉数据库文件的目录', default="ReputationDB")
+    target_exclu_args_group.add_argument('--ip', help="Query a single IP")
+    target_exclu_args_group.add_argument('--domain', help="Query a single domain name")
+    parser.add_argument('--type', dest='query_type', metavar='query_type', choices=['ip', 'domain'], help="Types of online networking queries, options:ip,domain")
+    parser.add_argument('--list', action='store_true', help="Display the list of added feeds")
+    parser.add_argument('--output', help="Save query results to external files")
+    parser.add_argument('--db', help='Directory containing IP reputation database files', default="ReputationDB")
 
     args = vars(parser.parse_args())
     return args
 
 
 def download_feeds(feed_id):
-    # 新建misp查询实例
+    # Create a new misp query instance
     misp_instance = misp_threat_intelligence(MISP_SERVER, MISP_API_KEY)
 
-    # 下载并缓存IP威胁情报数据，首先从内部MISP平台下载IP威胁情报
+    # Download and cache IP threat intelligence data, first download IP threat intelligence from the internal MISP platform
     feed_name = misp_instance.retrieve_feed_name_by_id(feed_id) 
     feed_content = misp_instance.fetch_feed_content(feed_id)
     feed_filename = feed_name.replace(' ', '_') + '.data'
     outFile = '{}{}{}'.format(REPUTATION_DB_PATH, os.sep, feed_filename)
-    # 保存feed数据至缓存数据文件
+    # Save feed data to cache data file
     save_file(feed_content, outFile)
 
 
@@ -345,26 +342,26 @@ def parse_input_file(inputfile):
         with open(inputfile, "r") as fd:
             content_lines = fd.readlines()
     except:
-        cprint_red("文件{}打开失败".format(inputfile))
+        cprint_red("File {} failed to open".format(inputfile))
         sys.exit(1)
 
-    # 读取ip列表文件，集合去重后生成ip列表
+    # Read the ip list file, and generate the ip list after the collection is deduplicated
     content_lines = list(set(content_lines))
     content_length = len(content_lines)
     cprint_cyan("[*] Input file contains [{}] items".format(content_length))
 
-    # 将文件分块处理
+    # Process files in chunks
     chunk_size = MAX_LINES
-    # ip记录数小于能处理的最大记录数
+    # The number of ip records is less than the maximum number of records that can be processed
     if content_length < MAX_LINES:
-        # ip记录数小于cpu核心，则并发为1，否则将记录数平均分配至每个cpu核心
+        # If the number of ip records is less than the cpu core, the concurrency is 1, otherwise the number of records is evenly distributed to each cpu core
         if content_length/CPU_CORES < 1:
             chunk_size = 1
         else:
             chunk_size = content_length // CPU_CORES 
     tmp = []
     for index in range(0, content_length, chunk_size):
-        # 将记录分成固定长度的小块，最后一块包含剩余的所有记录
+        # Divide records into small fixed-length chunks, the last chunk contains all remaining records
         if index + chunk_size > content_length:
             tmp.append(content_lines[index:])
         else:
@@ -381,7 +378,7 @@ def parse_input_file(inputfile):
 
 
 def check_match(item, db):
-    # 如果结果字典中不包含malicious条目，则初始化
+    # Initialize if the resulting dictionary contains no malicious entry
     if item in db:
         cprint_red("Malicious item detected: {}".format(item))
         if item != "":
@@ -393,7 +390,7 @@ def search_from_feeds(target_list):
     feed_threat_values = []
     cprint_cyan("Searching malicious ip from thread feeds ...")
 
-    # 遍历所有feed数据，将威胁数据添加至列表
+    # Iterate over all feed data and add threat data to the list
     for feed_file in feed_lists:
         if not os.path.isdir(feed_file):
             try:
@@ -497,9 +494,9 @@ def main():
             if not os.path.isdir(REPUTATION_DB_PATH):
                 os.mkdir(REPUTATION_DB_PATH)
 
-        # cache模式,先下载feed情报数据
+        # cache mode, first download feed intelligence data
         if cache_mode:
-            #  
+            
             if 'all' in args['feed_id']:
                 feed_ids = [ f['feed_id'] for f in threat_feeds_db ]
 
@@ -525,11 +522,11 @@ def main():
                     download_handler.start()
                     download_handler.join()
             
-            # 如果缓存数据，但未指定ip或ipfile，则缓存完后退出
+            # If data is cached, but no ip or ipfile is specified, exit after caching
             if not ('target_ip' in locals() and 'target_domain' in locals() and 'inputFile' in locals()):
                 sys.exit(0)
 
-        # 离线查询模式直接进行情报搜索
+        # Offline query mode for direct intelligence search
         if local_mode:
             try:
                 if 'target_ip' in locals():
@@ -539,7 +536,7 @@ def main():
                 else:
                     target_list = parse_input_file(inputFile)
                 
-                # 针对目标进行低信誉ip检索
+                # Low reputation ip retrieval for targets
                 search_from_feeds(target_list)
                 # detecting_threat_from_feeds(target_list)
                 print_flaged_item()
@@ -549,7 +546,7 @@ def main():
                 cprint_red("Error")
                 traceback.print_exc()
 
-        # AlienVault OTX进行在线查询
+        # AlienVault OTX for online inquiry
         if online_mode:
             query_type = args['query_type']
 
@@ -585,7 +582,7 @@ def main():
                         content = otx.results.pop()
                         if 'save_file_flag' in locals():
                             otx.save_result(content, outfile=output_file)
-                        # ip处理结束即重置ip的情报计数
+                        # When the ip processing ends, reset the ip's intelligence count
                         otx.alerts = [] 
                         otx.entity_num += 1
                 elif query_type.upper() == 'DOMAIN':
@@ -596,7 +593,7 @@ def main():
                         content = otx.results.pop()
                         if 'save_file_flag' in locals():
                             otx.save_result(content, outfile=output_file)
-                        # ip处理结束即重置ip情报数
+                        # After the ip processing is completed, the ip intelligence number is reset
                         otx.alerts = [] 
                         otx.entity_num += 1
     except:
