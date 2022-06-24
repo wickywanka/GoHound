@@ -27,55 +27,55 @@ pip3 install color
 1.Cache all feed data
 
 ```
-python3 ThreatHound.py --fetch all
+python3 GoHound.py --fetch all
 ```
 
 2.Only cache single feed data
 
 ```
-python3 ThreatHound.py --fetch <feedID>
+python3 GoHound.py --fetch <feedID>
 ```
 
 3.Cache feed data with id n-m
 
 ```
-python3 ThreatHound.py --fetch n m
+python3 GoHound.py --fetch n m
 ```
 
 ### Offline query mode
 1.Query the IP list
 ```
-python3 ThreatHound.py --local --type ip <IP table>
+python3 GoHound.py --local --type ip <IP table>
 ```
 2.Query the list of domain names
 ```
-python3 ThreatHound.py --local --type domain <Domain name list>
+python3 GoHound.py --local --type domain <Domain name list>
 ```
 3.Query a single IP
 ```
-python3 ThreatHound.py --local --ip <IP>
+python3 GoHound.py --local --ip <IP>
 ```
 4.Query a single domain name
 ```
-python3 ThreatHound.py --local --domain <DOMAIN>
+python3 GoHound.py --local --domain <DOMAIN>
 ```
 
 ### Online query mode
 1.Query the IP list
 ```
-python3 ThreatHound.py --online --type ip <IP list>
+python3 GoHound.py --online --type ip <IP list>
 ```
 2.Query the list of domain names
 ```
-python3 ThreatHound.py --online --type domain <Domain name list>
+python3 GoHound.py --online --type domain <Domain name list>
 ```
 3.Query a single IP
 ```
-python3 ThreatHound.py --online --ip <IP>
+python3 GoHound.py --online --ip <IP>
 ```
 4.Query a single domain name
 ```
-python3 ThreatHound.py --online --domain <DOMAIN>
+python3 GoHound.py --online --domain <DOMAIN>
 ```
 
 ### Example
