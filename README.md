@@ -85,7 +85,7 @@ Suricata NIDS detections for low reputation IPs
 ![Suricata_low_repuation_alerts](./Images/Suricata_low_reputation_alerts.png)
 
 The detection of low-trust IPs by scripts, the number of low-reputation IP detections increased from 95 to 383
-![ThreatHound_reputation](./Images/ThreatHound_reputation.png)
+![ThreatHound_reputation](./Images/GoHound_reputation.png)
 
 
 
