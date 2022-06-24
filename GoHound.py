@@ -19,7 +19,7 @@ from color import cprint, cprint_cyan, cprint_yellow, cprint_red, FgColor
 
 # MISP related global variables
 MISP_SERVER = 'https://10.28.94.11:8443'
-MISP_API_KEY = 'KwKGjLgfAy3Rva27oEPSA9LfavavWEv6UgmWgvgX'
+MISP_API_KEY = <Your API KEY>
 threat_feeds_db = [
     {'feed_id': 5, 'feed_name': 'emergingthreats compromised ips', 'feed_url': 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt'},
     {'feed_id': 6, 'feed_name': 'appspot malware domain lists', 'feed_url': 'https://panwdbl.appspot.com/lists/mdl.txt'},
