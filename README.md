@@ -78,18 +78,6 @@ python3 GoHound.py --online --ip <IP>
 python3 GoHound.py --online --domain <DOMAIN>
 ```
 
-### Example
-
-Suricata NIDS detections for low reputation IPs
-
-![Suricata_low_repuation_alerts](./Images/Suricata_low_reputation_alerts.png)
-
-The detection of low-trust IPs by scripts, the number of low-reputation IP detections increased from 95 to 383
-![ThreatHound_reputation](./Images/GoHound_reputation.png)
-
-
-
-
 # Refer to
 
 ----
